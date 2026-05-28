@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+}
+
+@theme inline {
+  --font-sans: var(--font-geist);
+  --font-mono: var(--font-geist-mono);
+}
