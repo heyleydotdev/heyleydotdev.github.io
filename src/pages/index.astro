@@ -118,7 +118,7 @@ const timeline: TimelineItem[] = [
 
 <Layout>
 	<div class="grid flex-1 px-6 lg:grid-cols-2 lg:gap-12 lg:px-12">
-		<div class="flex flex-col gap-12 py-6 lg:py-12 max-w-lg w-full [&_a]:underline [&_a]:font-medium [&_a]:underline-offset-4 [&_a]:hover:text-blue-600">
+		<div class="flex flex-col gap-12 pt-6 pb-24 lg:pt-12 max-w-lg w-full [&_a]:underline [&_a]:font-medium [&_a]:underline-offset-4 [&_a]:hover:text-blue-600 dark:[&_a]:hover:text-green-300">
 			<div class="flex items-center gap-2 font-medium">
 				<a href="https://github.com/heyleydotdev" target="_blank" rel="noreferrer">github</a>
 				/
@@ -136,24 +136,24 @@ const timeline: TimelineItem[] = [
 				<h2 class="font-medium">Timeline</h2>
 				<ol class="flex flex-col">
 					{timeline.map((item, index) => (
-						<li class="group relative border-l border-zinc-200 pb-8 pl-5 last:border-transparent last:pb-0">
+						<li class="group relative border-l border-zinc-200 pb-8 pl-5 last:border-transparent last:pb-0 dark:border-green-900">
 							<span
 								class:list={[
-									"absolute -left-[3px] top-[5px] size-1.5 rounded-full ring-4 ring-zinc-50",
+									"absolute -left-[3px] top-[5px] size-1.5 rounded-full ring-4 ring-zinc-50 dark:ring-[#050b07]",
 									index === 0
-										? "bg-blue-600"
-										: "bg-zinc-300 transition-colors group-hover:bg-blue-600",
+										? "bg-blue-600 dark:bg-green-400"
+										: "bg-zinc-300 transition-colors group-hover:bg-blue-600 dark:bg-green-700 dark:group-hover:bg-green-400",
 								]}
 							>
 								{index === 0 && (
-									<span class="absolute inset-0 animate-ping rounded-full bg-blue-600/50 motion-reduce:animate-none"></span>
+									<span class="absolute inset-0 animate-ping rounded-full bg-blue-600/50 motion-reduce:animate-none dark:bg-green-400/50"></span>
 								)}
 							</span>
 							<div class="flex flex-col gap-1">
 								{item.datetime ? (
-									<time class="text-xs text-zinc-500" datetime={item.datetime}>{item.when}</time>
+									<time class="text-xs text-zinc-500 dark:text-green-600" datetime={item.datetime}>{item.when}</time>
 								) : (
-									<span class="text-xs text-zinc-500">{item.when}</span>
+									<span class="text-xs text-zinc-500 dark:text-green-600">{item.when}</span>
 								)}
 								<span>
 									{item.href ? (
@@ -162,7 +162,7 @@ const timeline: TimelineItem[] = [
 										item.title
 									)}
 								</span>
-								{item.body && <p class="text-zinc-600">{item.body}</p>}
+								{item.body && <p class="text-zinc-600 dark:text-green-600">{item.body}</p>}
 							</div>
 						</li>
 					))}
@@ -176,11 +176,19 @@ const timeline: TimelineItem[] = [
 					width="370"
 					height="364"
 					aria-hidden="true"
-					class="pointer-events-none"
+					class="pointer-events-none text-zinc-700 dark:text-green-400"
 				></canvas>
 			</div>
 		</div>
 	</div>
+	<button
+		id="wake-up"
+		type="button"
+		aria-pressed="false"
+		class="fixed bottom-4 right-4 z-10 cursor-pointer rounded border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-medium text-zinc-600 hover:text-blue-600 dark:border-green-900 dark:bg-[#050b07] dark:text-green-600 dark:hover:text-green-300"
+	>
+		Wake up Neo...
+	</button>
 	<script>
 		const COLS = 44;
 		const ROWS = 26;
@@ -191,6 +199,13 @@ const timeline: TimelineItem[] = [
 		const SPIN = 0.55; // radians per second
 		const FRAME_MS = 33; // ~30fps cap
 		const STATIC_ANGLE = 0.6; // pose used for reduced motion
+
+		const root = document.documentElement;
+		const wake = document.getElementById("wake-up");
+		wake?.addEventListener("click", () => {
+			const dark = root.classList.toggle("dark");
+			wake.setAttribute("aria-pressed", String(dark));
+		});
 
 		const canvas = document.getElementById("ascii-model") as HTMLCanvasElement | null;
 		const wide = window.matchMedia("(min-width: 1024px)");
