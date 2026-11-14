@@ -12,15 +12,10 @@ export default defineConfig({
   fonts: [
     {
       provider: fontProviders.google(),
-      name: "Geist",
-      cssVariable: "--font-geist",
-      fallbacks: ["sans"],
-    },
-    {
-      provider: fontProviders.google(),
       name: "Geist Mono",
       cssVariable: "--font-geist-mono",
       weights: [400, 500, 600],
+      styles: ["normal"],
       fallbacks: ["monospace"],
     },
   ],
