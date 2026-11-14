@@ -169,5 +169,208 @@ const timeline: TimelineItem[] = [
 				</ol>
 			</section>
 		</div>
+		<div class="hidden lg:block">
+			<div class="sticky top-0 flex h-dvh items-center justify-center">
+				<canvas
+					id="ascii-model"
+					width="370"
+					height="364"
+					aria-hidden="true"
+					class="pointer-events-none"
+				></canvas>
+			</div>
+		</div>
 	</div>
+	<script>
+		const COLS = 44;
+		const ROWS = 26;
+		const CELL_H = 14;
+		const CHARS = ".,-~:;=!*#$@";
+		const STEP = 0.05; // point spacing in model units
+		const DEPTH = 0.35; // half-thickness of the H
+		const SPIN = 0.55; // radians per second
+		const FRAME_MS = 33; // ~30fps cap
+		const STATIC_ANGLE = 0.6; // pose used for reduced motion
+
+		const canvas = document.getElementById("ascii-model") as HTMLCanvasElement | null;
+		const wide = window.matchMedia("(min-width: 1024px)");
+		const still = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+		type Renderer = { start(): void; stop(): void; renderOnce(): void };
+
+		// Points are stored flat: [x, y, z, nx, ny, nz, ...]
+		function buildPoints(): Float32Array {
+			const pts: number[] = [];
+
+			function face(x0: number, x1: number, y0: number, y1: number, pz: number, nz: number) {
+				const nx = Math.round((x1 - x0) / STEP);
+				const ny = Math.round((y1 - y0) / STEP);
+				for (let i = 0; i <= nx; i++)
+					for (let j = 0; j <= ny; j++)
+						pts.push(x0 + ((x1 - x0) * i) / nx, y0 + ((y1 - y0) * j) / ny, pz, 0, 0, nz);
+			}
+
+			for (const pz of [-DEPTH, DEPTH]) {
+				const nz = Math.sign(pz);
+				face(-0.8, -0.5, -1, 1, pz, nz);
+				face(0.5, 0.8, -1, 1, pz, nz);
+				face(-0.5, 0.5, -0.15, 0.15, pz, nz);
+			}
+
+			// Outline of the H (counter-clockwise, so (dy, -dx) points outward)
+			const poly = [
+				[-0.8, -1], [-0.5, -1], [-0.5, -0.15], [0.5, -0.15], [0.5, -1], [0.8, -1],
+				[0.8, 1], [0.5, 1], [0.5, 0.15], [-0.5, 0.15], [-0.5, 1], [-0.8, 1],
+			];
+			const zSteps = Math.round((2 * DEPTH) / STEP);
+			for (let k = 0; k < poly.length; k++) {
+				const [x0, y0] = poly[k];
+				const [x1, y1] = poly[(k + 1) % poly.length];
+				const dx = x1 - x0;
+				const dy = y1 - y0;
+				const len = Math.hypot(dx, dy);
+				const nx = dy / len;
+				const ny = -dx / len;
+				const steps = Math.max(1, Math.ceil(len / STEP));
+				for (let s = 0; s <= steps; s++) {
+					const x = x0 + (dx * s) / steps;
+					const y = y0 + (dy * s) / steps;
+					for (let q = 0; q <= zSteps; q++) pts.push(x, y, -DEPTH + (2 * DEPTH * q) / zSteps, nx, ny, 0);
+				}
+			}
+			return new Float32Array(pts);
+		}
+
+		async function createRenderer(canvas: HTMLCanvasElement): Promise<Renderer> {
+			const ctx = canvas.getContext("2d");
+			if (!ctx) throw new Error("2D canvas unavailable");
+
+			const family =
+				getComputedStyle(document.documentElement).getPropertyValue("--font-geist-mono").trim() ||
+				"monospace";
+			const font = `${CELL_H}px ${family}`;
+			// fonts.ready only waits for fonts already requested; load() actually requests it.
+			await document.fonts.load(font).catch(() => {});
+
+			ctx.font = font;
+			const adv = ctx.measureText("M").width;
+			const dpr = Math.min(window.devicePixelRatio || 1, 2);
+			canvas.width = Math.ceil(COLS * adv * dpr);
+			canvas.height = ROWS * CELL_H * dpr;
+			canvas.style.width = `${COLS * adv}px`;
+			canvas.style.height = `${ROWS * CELL_H}px`;
+			// Setting width/height resets context state, so configure afterwards.
+			ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+			ctx.font = font;
+			ctx.textBaseline = "top";
+
+			const pts = buildPoints();
+			const buf = new Uint8Array(COLS * ROWS);
+			const zbuf = new Float32Array(COLS * ROWS);
+			const scaleX = (COLS * 0.58) / 1.6;
+			const scaleY = scaleX * (adv / CELL_H); // keep cells visually square
+			const maxShade = CHARS.length - 1;
+
+			function render(A: number) {
+				buf.fill(32);
+				zbuf.fill(-Infinity);
+
+				const B = 0.35 + 0.22 * Math.sin(A * 0.7);
+				const sinA = Math.sin(A), cosA = Math.cos(A);
+				const sinB = Math.sin(B), cosB = Math.cos(B);
+
+				for (let i = 0; i < pts.length; i += 6) {
+					// Rotate the normal first so back-facing points can be skipped.
+					const n0x = pts[i + 3], n0y = pts[i + 4], n0z = pts[i + 5];
+					const nx = n0x * cosA + n0z * sinA;
+					let nz = -n0x * sinA + n0z * cosA;
+					const ny = n0y * cosB - nz * sinB;
+					nz = n0y * sinB + nz * cosB;
+					if (nz <= 0) continue; // back-face culling
+
+					const p0x = pts[i], p0y = pts[i + 1], p0z = pts[i + 2];
+					const x = p0x * cosA + p0z * sinA;
+					let z = -p0x * sinA + p0z * cosA;
+					const y = p0y * cosB - z * sinB;
+					z = p0y * sinB + z * cosB;
+
+					const px = Math.floor(COLS / 2 + x * scaleX);
+					const py = Math.floor(ROWS / 2 - y * scaleY);
+					if (px < 0 || px >= COLS || py < 0 || py >= ROWS) continue;
+					const o = px + COLS * py;
+					if (z <= zbuf[o]) continue;
+					zbuf[o] = z;
+
+					const lit = Math.max(0, Math.min(1, nx * 0.35 + ny * 0.45 + nz * 0.82));
+					buf[o] = CHARS.charCodeAt(Math.round(lit * maxShade));
+				}
+
+				ctx!.clearRect(0, 0, COLS * adv, ROWS * CELL_H);
+				ctx!.fillStyle = getComputedStyle(canvas).color; // follows CSS / dark mode
+				for (let y = 0; y < ROWS; y++) {
+					ctx!.fillText(String.fromCharCode(...buf.subarray(y * COLS, (y + 1) * COLS)), 0, y * CELL_H);
+				}
+			}
+
+			let raf = 0;
+			let angle = 0;
+			let last = 0;
+
+			function frame(t: number) {
+				raf = requestAnimationFrame(frame);
+				if (t - last < FRAME_MS) return;
+				angle += (Math.min(t - last, 100) / 1000) * SPIN; // delta time, clamped after pauses
+				last = t;
+				render(angle);
+			}
+
+			return {
+				start() {
+					if (raf) return;
+					last = performance.now();
+					raf = requestAnimationFrame(frame);
+				},
+				stop() {
+					cancelAnimationFrame(raf);
+					raf = 0;
+				},
+				renderOnce() {
+					render(STATIC_ANGLE);
+				},
+			};
+		}
+
+		function init(canvas: HTMLCanvasElement) {
+			let ready: Promise<Renderer> | null = null;
+			let visible = false;
+
+			async function update() {
+				if (!wide.matches) {
+					(await ready)?.stop();
+					return;
+				}
+				ready ??= createRenderer(canvas);
+				const r = await ready;
+				if (!wide.matches) return r.stop();
+				if (still.matches) {
+					r.stop();
+					r.renderOnce();
+				} else if (visible) {
+					r.start();
+				} else {
+					r.stop();
+				}
+			}
+
+			wide.addEventListener("change", update);
+			still.addEventListener("change", update);
+			// Pause when scrolled offscreen; also fires once on observe(), which triggers the first update.
+			new IntersectionObserver(([entry]) => {
+				visible = entry.isIntersecting;
+				update();
+			}).observe(canvas);
+		}
+
+		if (canvas) init(canvas);
+	</script>
 </Layout>
