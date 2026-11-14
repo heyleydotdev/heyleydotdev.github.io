@@ -1,5 +1,119 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+type TimelineItem = {
+	when: string;
+	title: string;
+	body?: string;
+	datetime?: string;
+	href?: string;
+};
+
+const timeline: TimelineItem[] = [
+	{
+		when: "Now",
+		title: "Building and learning",
+		body: "Working on the projects below and learning Rust.",
+	},
+	{
+		when: "Project",
+		title: "re-events",
+		href: "https://github.com/heyleydotdev/re-events",
+		body: "A WordPress events plugin — venues, organizers, recurring events, tickets and bookings, with Stripe and PayPal payments.",
+	},
+	{
+		when: "Project",
+		title: "tars",
+		href: "https://github.com/heyleydotdev/tars",
+		body: "An Electron notebook that turns notes and chat into todos, reminders, expenses and journal entries. React renderer, Hono API on Cloudflare Workers, D1 and R2. Built for the Meta Global AI Hackathon 2026 in the Autonomous Agents & Workflows category — scored 6.1 in the automated round, no placement.",
+	},
+	{
+		when: "Project",
+		title: "cf-monorepo",
+		href: "https://github.com/heyleydotdev/cf-monorepo",
+		body: "A Bun + Turborepo starter for Cloudflare Workers — three deployable apps, one shared service layer, strict TypeScript, D1 migrations and tests running in the Workers runtime.",
+	},
+	{
+		when: "2025",
+		datetime: "2025",
+		title: "innox-v2",
+		href: "https://github.com/heyleydotdev/innox-v2",
+		body: "The Innox site: services, packages, posts and a contact flow in Next.js, deployed to Cloudflare Workers with OpenNext.",
+	},
+	{
+		when: "2025",
+		datetime: "2025",
+		title: "srilankato.com",
+		href: "https://srilankato.com/",
+		body: "Client project: a Sri Lanka tour operator site — destinations, tour packages, vehicle rental and enquiries. Shipped April 2025.",
+	},
+	{
+		when: "2024",
+		datetime: "2024",
+		title: "Founder · Innox",
+		body: "Started a digital solutions service, building and running web, hosting and automation work for clients.",
+	},
+	{
+		when: "2021 — 2024",
+		title: "Software developer · Crypto",
+		body: "Worked across multiple projects in the crypto industry, shipping web and backend systems.",
+	},
+	{
+		when: "2023",
+		datetime: "2023",
+		title: "opensea-ui-clone",
+		href: "https://github.com/heyleydotdev/opensea-ui-clone",
+		body: "A clone of the OpenSea UI home page, built with Vite, React, Tailwind CSS and Swiper.",
+	},
+	{
+		when: "2021",
+		datetime: "2021",
+		title: "1st place · Call of Duty",
+		body: "Won a competitive Call of Duty tournament.",
+	},
+	{
+		when: "2021",
+		datetime: "2021",
+		title: "Computer science · ICBT Kandy Campus",
+		body: "Graduated with a Cardiff Metropolitan University certificate through ICBT Kandy Campus.",
+	},
+	{
+		when: "2020",
+		datetime: "2020",
+		title: "Hosted Alpha Returns · Call of Duty",
+		body: "Hosted Pandora Esports' Alpha Returns Call of Duty 4: Modern Warfare tournament.",
+	},
+	{
+		when: "2019",
+		datetime: "2019",
+		title: "Co-founder & developer · Pandora Esports",
+		body: "Helped build and run an esports clan founded in 2014, moving from player to co-founder. Handled DevOps — server setup, deployment and hosting.",
+	},
+	{
+		when: "2019",
+		datetime: "2019",
+		title: "2nd place · Call of Duty",
+		body: "Took second place in a competitive Call of Duty tournament.",
+	},
+	{
+		when: "2018",
+		datetime: "2018",
+		title: "5th place · Crossfire",
+		body: "Placed fifth in a Crossfire tournament.",
+	},
+	{
+		when: "2017",
+		datetime: "2017",
+		title: "Competitive FPS player",
+		body: "Competed in first-person shooters, mainly Call of Duty 4: Modern Warfare and Counter-Strike.",
+	},
+	{
+		when: "2017",
+		datetime: "2017",
+		title: "1st place · Call of Duty",
+		body: "Won a competitive Call of Duty tournament.",
+	},
+];
 ---
 
 <Layout>
@@ -16,6 +130,42 @@ import Layout from '../layouts/Layout.astro';
 				<h1>Hi, I’m Raveen, a software developer from <a href="https://en.wikipedia.org/wiki/Sri_Lanka" target="_blank" rel="noreferrer">Sri Lanka</a>.</h1>
 				<p>I work with modern web frameworks, JavaScript, TypeScript, Go, and more, with hands-on experience in designing, deploying, and maintaining scalable systems, including bot scripting, server configuration, hosting, and long-running production environments.</p>
 			</div>
+			<section class="flex flex-col gap-4 text-sm/6">
+				<h2 class="font-medium">Timeline</h2>
+				<ol class="flex flex-col">
+					{timeline.map((item, index) => (
+						<li class="group relative border-l border-zinc-200 pb-8 pl-5 last:border-transparent last:pb-0">
+							<span
+								class:list={[
+									"absolute -left-[3px] top-[5px] size-1.5 rounded-full ring-4 ring-zinc-50",
+									index === 0
+										? "bg-blue-600"
+										: "bg-zinc-300 transition-colors group-hover:bg-blue-600",
+								]}
+							>
+								{index === 0 && (
+									<span class="absolute inset-0 animate-ping rounded-full bg-blue-600/50 motion-reduce:animate-none"></span>
+								)}
+							</span>
+							<div class="flex flex-col gap-1">
+								{item.datetime ? (
+									<time class="text-xs text-zinc-500" datetime={item.datetime}>{item.when}</time>
+								) : (
+									<span class="text-xs text-zinc-500">{item.when}</span>
+								)}
+								<span>
+									{item.href ? (
+										<a href={item.href} target="_blank" rel="noreferrer">{item.title}</a>
+									) : (
+										item.title
+									)}
+								</span>
+								{item.body && <p class="text-zinc-600">{item.body}</p>}
+							</div>
+						</li>
+					))}
+				</ol>
+			</section>
 		</div>
 	</div>
 </Layout>
