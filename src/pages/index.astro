@@ -8,6 +8,7 @@ type TimelineItem = {
 	datetime?: string;
 	href?: string;
 	tag?: string;
+	sound?: string;
 };
 
 const timeline: TimelineItem[] = [
@@ -181,6 +182,13 @@ const timeline: TimelineItem[] = [
 		title: "First computer class",
 		body: "Was already into computers, so mom put me in a class to learn the basics. No PC at home, so I was always in the school computer lab.",
 	},
+	{
+		when: "2009",
+		datetime: "2009",
+		title: "First computer game",
+		body: "Got my hands on a computer for the first time and played Grand Theft Auto 3.",
+		sound: "/gta3-pickup.opus",
+	},
 ];
 ---
 
@@ -235,7 +243,23 @@ const timeline: TimelineItem[] = [
 										item.title
 									)}
 								</span>
-								{item.body && <p class="text-zinc-600 dark:text-green-600">{item.body}</p>}
+								{item.body && (
+									<p class="text-zinc-600 dark:text-green-600">
+										{item.body}
+										{item.sound && (
+											<button
+												type="button"
+												data-sound={item.sound}
+												aria-label="Play the Grand Theft Auto 3 pickup sound"
+												class="ml-1 inline-flex cursor-pointer align-middle text-zinc-500 hover:text-blue-600 dark:text-green-600 dark:hover:text-green-400"
+											>
+												<svg viewBox="0 0 10 10" class="size-3" aria-hidden="true">
+													<path d="M2 1l6 4-6 4z" fill="currentColor" />
+												</svg>
+											</button>
+										)}
+									</p>
+								)}
 							</div>
 						</li>
 					))}
@@ -278,6 +302,22 @@ const timeline: TimelineItem[] = [
 		wake?.addEventListener("click", () => {
 			const dark = root.classList.toggle("dark");
 			wake.setAttribute("aria-pressed", String(dark));
+		});
+
+		document.querySelectorAll<HTMLButtonElement>("[data-sound]").forEach((btn) => {
+			const audio = new Audio(btn.dataset.sound);
+			const idle = () => {
+				btn.removeAttribute("aria-busy");
+				btn.classList.remove("opacity-50", "animate-pulse");
+			};
+			audio.addEventListener("ended", idle);
+			audio.addEventListener("error", idle);
+			btn.addEventListener("click", () => {
+				btn.setAttribute("aria-busy", "true");
+				btn.classList.add("opacity-50", "animate-pulse", "motion-reduce:animate-none");
+				audio.currentTime = 0;
+				audio.play().then(idle, idle); // resolves once playback starts
+			});
 		});
 
 		const canvas = document.getElementById("ascii-model") as HTMLCanvasElement | null;
