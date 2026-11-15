@@ -7,7 +7,6 @@ type TimelineItem = {
 	body?: string;
 	datetime?: string;
 	href?: string;
-	tag?: string;
 	sound?: string;
 };
 
@@ -65,18 +64,16 @@ const timeline: TimelineItem[] = [
 	{
 		when: "2024",
 		datetime: "2024-09-15",
-		tag: "side quest",
 		title: "weekend-paradise",
 		href: "https://weekendp.vercel.app/",
-		body: "A hotel landing page for Weekend Paradise, covering rooms, dining, spa and booking.",
+		body: "Side quest: a hotel landing page for Weekend Paradise, covering rooms, dining, spa and booking.",
 	},
 	{
 		when: "2024",
 		datetime: "2024-09-07",
-		tag: "side quest",
 		title: "beauty-center",
 		href: "https://beauty-center.vercel.app/",
-		body: "A landing page for a beauty centre, covering services, pricing, gallery and booking.",
+		body: "Side quest: a landing page for a beauty centre, covering services, pricing, gallery and booking.",
 	},
 	{
 		when: "2024",
@@ -107,10 +104,9 @@ const timeline: TimelineItem[] = [
 	{
 		when: "2022",
 		datetime: "2022",
-		tag: "side quest",
 		title: "twitter-clone",
 		href: "https://twcloned.vercel.app/",
-		body: "A Twitter UI clone built with Next.js, Tailwind CSS and Sanity.",
+		body: "Side quest: a Twitter UI clone built with Next.js, Tailwind CSS and Sanity.",
 	},
 	{
 		when: "2021",
@@ -213,7 +209,7 @@ const timeline: TimelineItem[] = [
 			</div>
 			<div class="flex flex-col gap-3 text-sm/6">
 				<h1>Hi, I’m Raveen, a software developer from <a href="https://en.wikipedia.org/wiki/Sri_Lanka" target="_blank" rel="noreferrer">Sri Lanka</a>.</h1>
-				<p>I work with modern web frameworks, JavaScript, TypeScript, Go, and more, with hands-on experience in designing, deploying, and maintaining scalable systems, including bot scripting, server configuration, hosting, and long-running production environments.</p>
+				<p>I work with modern web frameworks, JavaScript, TypeScript, Go, and more, with hands-on experience in designing, deploying, and maintaining scalable systems, including bot scripting, server configuration, hosting, and long-running production environments. <a href="https://www.linkedin.com/in/heyleydotdev" target="_blank" rel="noreferrer">Available for Hire</a>.</p>
 			</div>
 			<section class="flex flex-col gap-4 text-sm/6">
 				<h2 class="font-medium">Timeline</h2>
@@ -233,16 +229,11 @@ const timeline: TimelineItem[] = [
 								)}
 							</span>
 							<div class="flex flex-col gap-1">
-								<div class="flex items-center gap-2">
-									{item.datetime ? (
-										<time class="text-xs text-zinc-500 dark:text-green-600" datetime={item.datetime}>{item.when}</time>
-									) : (
-										<span class="text-xs text-zinc-500 dark:text-green-600">{item.when}</span>
-									)}
-									{item.tag && (
-										<span class="text-xs text-amber-600 dark:text-amber-400 uppercase">[/{item.tag}]</span>
-									)}
-								</div>
+								{item.datetime ? (
+									<time class="text-xs text-zinc-500 dark:text-green-600" datetime={item.datetime}>{item.when}</time>
+								) : (
+									<span class="text-xs text-zinc-500 dark:text-green-600">{item.when}</span>
+								)}
 								<span>
 									{item.href ? (
 										<a href={item.href} target="_blank" rel="noreferrer">{item.title}</a>
