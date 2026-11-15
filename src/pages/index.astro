@@ -7,6 +7,7 @@ type TimelineItem = {
 	body?: string;
 	datetime?: string;
 	href?: string;
+	tag?: string;
 };
 
 const timeline: TimelineItem[] = [
@@ -54,6 +55,29 @@ const timeline: TimelineItem[] = [
 		body: "Started a digital solutions service, building and running web, hosting and automation work for clients.",
 	},
 	{
+		when: "2024",
+		datetime: "2024-09-15",
+		tag: "side quest",
+		title: "weekend-paradise",
+		href: "https://weekendp.vercel.app/",
+		body: "A hotel landing page for Weekend Paradise — rooms, dining, spa and booking.",
+	},
+	{
+		when: "2024",
+		datetime: "2024-09-07",
+		tag: "side quest",
+		title: "beauty-center",
+		href: "https://beauty-center.vercel.app/",
+		body: "A landing page for a beauty centre — services, pricing, gallery and booking.",
+	},
+	{
+		when: "2024",
+		datetime: "2024-08-15",
+		title: "looner",
+		href: "https://t.me/loonergamebot",
+		body: "A Telegram Mini App: pop rising balloons, earn XP and climb a leaderboard. Next.js on Cloudflare Pages, Hono + tRPC on Workers, with D1 and KV. Shipped August 2024.",
+	},
+	{
 		when: "2021 — 2024",
 		title: "Software developer · Crypto",
 		body: "Worked across multiple projects in the crypto industry, shipping web and backend systems.",
@@ -64,6 +88,21 @@ const timeline: TimelineItem[] = [
 		title: "opensea-ui-clone",
 		href: "https://github.com/heyleydotdev/opensea-ui-clone",
 		body: "A clone of the OpenSea UI home page, built with Vite, React, Tailwind CSS and Swiper.",
+	},
+	{
+		when: "2023",
+		datetime: "2023-04-07",
+		title: "pixeldesc",
+		href: "https://pixeldesc.vercel.app/",
+		body: "A marketing site for PixelDesc, a web and graphic design studio — services, team, FAQs and contact.",
+	},
+	{
+		when: "2022",
+		datetime: "2022",
+		tag: "side quest",
+		title: "twitter-clone",
+		href: "https://twcloned.vercel.app/",
+		body: "A Twitter UI clone built with Next.js, Tailwind CSS and Sanity.",
 	},
 	{
 		when: "2021",
@@ -150,11 +189,16 @@ const timeline: TimelineItem[] = [
 								)}
 							</span>
 							<div class="flex flex-col gap-1">
-								{item.datetime ? (
-									<time class="text-xs text-zinc-500 dark:text-green-600" datetime={item.datetime}>{item.when}</time>
-								) : (
-									<span class="text-xs text-zinc-500 dark:text-green-600">{item.when}</span>
-								)}
+								<div class="flex items-center gap-2">
+									{item.datetime ? (
+										<time class="text-xs text-zinc-500 dark:text-green-600" datetime={item.datetime}>{item.when}</time>
+									) : (
+										<span class="text-xs text-zinc-500 dark:text-green-600">{item.when}</span>
+									)}
+									{item.tag && (
+										<span class="text-xs text-amber-600 dark:text-amber-400 uppercase">[/{item.tag}]</span>
+									)}
+								</div>
 								<span>
 									{item.href ? (
 										<a href={item.href} target="_blank" rel="noreferrer">{item.title}</a>
