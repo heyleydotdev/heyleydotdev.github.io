@@ -9,6 +9,7 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   site: "https://heyleydotdev.github.io",
+  server: { host: "0.0.0.0", port: 3000 },
   fonts: [
     {
       provider: fontProviders.google(),
