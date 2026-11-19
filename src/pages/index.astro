@@ -1,231 +1,20 @@
 ---
+import { getCollection, render } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 
-type TimelineItem = {
-	when: string;
-	title: string;
-	body?: string;
-	datetime?: string;
-	href?: string;
-	sound?: string;
-};
-
-const timeline: TimelineItem[] = [
-	{
-		when: "Now",
-		title: "Building and learning",
-		body: "Working on the projects below and learning Rust.",
-	},
-	{
-		when: "Project",
-		title: "re-events",
-		href: "https://github.com/heyleydotdev/re-events",
-		body: "A WordPress events plugin for venues, organizers, recurring events, tickets and bookings, with Stripe and PayPal payments.",
-	},
-	{
-		when: "Project",
-		title: "tars",
-		href: "https://github.com/heyleydotdev/tars",
-		body: "An Electron notebook that turns notes and chat into todos, reminders, expenses and journal entries. React renderer, Hono API on Cloudflare Workers, D1 and R2. Built for the Meta Global AI Hackathon 2026 in the Autonomous Agents & Workflows category. Scored 6.1 in the automated round, no placement.",
-	},
-	{
-		when: "Project",
-		title: "cf-monorepo",
-		href: "https://github.com/heyleydotdev/cf-monorepo",
-		body: "A Bun + Turborepo starter for Cloudflare Workers: three deployable apps, one shared service layer, strict TypeScript, D1 migrations and tests running in the Workers runtime.",
-	},
-	{
-		when: "2026",
-		datetime: "2026-10-26",
-		title: "Meta Global AI Developer Hackathon",
-		href: "https://cerebralvalley.ai/e/meta-ai-developer-hackathon",
-		body: "Remote hackathon. Took part and built tars for the Autonomous Agents & Workflows category.",
-	},
-	{
-		when: "2025",
-		datetime: "2025",
-		title: "innox-v2",
-		href: "https://github.com/heyleydotdev/innox-v2",
-		body: "The Innox site: services, packages, posts and a contact flow in Next.js, deployed to Cloudflare Workers with OpenNext.",
-	},
-	{
-		when: "2025",
-		datetime: "2025-10-27",
-		title: "edmrodeo.com",
-		href: "https://www.edmrodeo.com/",
-		body: "Client project: a Texas electronic music site covering events, locations, artists and a blog. Shipped October 2025.",
-	},
-	{
-		when: "2025",
-		datetime: "2025-10-12",
-		title: "Web3Ceylon · Ella",
-		href: "https://luma.com/1abnpfkw",
-		body: "Web3 community retreat and networking in Ella.",
-	},
-	{
-		when: "2025",
-		datetime: "2025-09-28",
-		title: "Web3Ceylon · Kandy",
-		href: "https://luma.com/nfwqhe8u",
-		body: "Blockchain fundamentals and crypto essentials in Kandy.",
-	},
-	{
-		when: "2025",
-		datetime: "2025-05-22",
-		title: "Global Pizza Party · Kandy",
-		href: "https://luma.com/6zp2qn8a",
-		body: "PizzaDAO's global pizza party in Kandy.",
-	},
-	{
-		when: "2025",
-		datetime: "2025",
-		title: "srilankato.com",
-		href: "https://srilankato.com/",
-		body: "Client project: a Sri Lanka tour operator site with destinations, tour packages, vehicle rental and enquiries. Shipped April 2025.",
-	},
-	{
-		when: "2024",
-		datetime: "2024",
-		title: "Founder · Innox",
-		body: "Started a digital solutions service, building and running web, hosting and automation work for clients.",
-	},
-	{
-		when: "2024",
-		datetime: "2024-09-15",
-		title: "weekend-paradise",
-		href: "https://weekendp.vercel.app/",
-		body: "Side quest: a hotel landing page for Weekend Paradise, covering rooms, dining, spa and booking.",
-	},
-	{
-		when: "2024",
-		datetime: "2024-09-07",
-		title: "beauty-center",
-		href: "https://beauty-center.vercel.app/",
-		body: "Side quest: a landing page for a beauty centre, covering services, pricing, gallery and booking.",
-	},
-	{
-		when: "2024",
-		datetime: "2024-08-15",
-		title: "looner",
-		href: "https://t.me/loonergamebot",
-		body: "A Telegram Mini App: pop rising balloons, earn XP and climb a leaderboard. Next.js on Cloudflare Pages, Hono + tRPC on Workers, with D1 and KV. Shipped August 2024.",
-	},
-	{
-		when: "2021 – 2024",
-		title: "Software developer · Crypto",
-		body: "Worked across multiple projects in the crypto industry, shipping web and backend systems.",
-	},
-	{
-		when: "2023",
-		datetime: "2023",
-		title: "opensea-ui-clone",
-		href: "https://github.com/heyleydotdev/opensea-ui-clone",
-		body: "A clone of the OpenSea UI home page, built with Vite, React, Tailwind CSS and Swiper.",
-	},
-	{
-		when: "2023",
-		datetime: "2023-04-07",
-		title: "pixeldesc",
-		href: "https://pixeldesc.vercel.app/",
-		body: "A marketing site for PixelDesc, a web and graphic design studio, with services, team, FAQs and contact.",
-	},
-	{
-		when: "2022",
-		datetime: "2022",
-		title: "twitter-clone",
-		href: "https://twcloned.vercel.app/",
-		body: "Side quest: a Twitter UI clone built with Next.js, Tailwind CSS and Sanity.",
-	},
-	{
-		when: "2021",
-		datetime: "2021",
-		title: "1st place · Call of Duty",
-		body: "Won a competitive Call of Duty tournament.",
-	},
-	{
-		when: "2021",
-		datetime: "2021",
-		title: "Computer science · ICBT Kandy Campus",
-		body: "Graduated with a Cardiff Metropolitan University certificate through ICBT Kandy Campus.",
-	},
-	{
-		when: "2020",
-		datetime: "2020",
-		title: "Hosted Alpha Returns · Call of Duty",
-		body: "Hosted Pandora Esports' Alpha Returns Call of Duty 4: Modern Warfare tournament.",
-	},
-	{
-		when: "2019",
-		datetime: "2019",
-		title: "Co-founder & developer · Pandora Esports",
-		body: "Helped build and run an esports clan founded in 2014, moving from player to co-founder. Handled DevOps: server setup, deployment and hosting.",
-	},
-	{
-		when: "2019",
-		datetime: "2019",
-		title: "2nd place · Call of Duty",
-		body: "Took second place in a competitive Call of Duty tournament.",
-	},
-	{
-		when: "2018",
-		datetime: "2018",
-		title: "Started CSE degree",
-		body: "Started my computer science degree at ICBT Kandy Campus.",
-	},
-	{
-		when: "2018",
-		datetime: "2018",
-		title: "5th place · Crossfire",
-		body: "Placed fifth in a Crossfire tournament.",
-	},
-	{
-		when: "2017",
-		datetime: "2017",
-		title: "1st place · Call of Duty",
-		body: "Won a competitive Call of Duty tournament.",
-	},
-	{
-		when: "2017",
-		datetime: "2017",
-		title: "Competitive FPS player",
-		body: "Competed in first-person shooters, mainly Call of Duty 4: Modern Warfare and Counter-Strike.",
-	},
-	{
-		when: "2014 – 2017",
-		title: "School and exams",
-		body: "School stuff and exams took most of my time between 2014 and 2017.",
-	},
-	{
-		when: "2014",
-		datetime: "2014",
-		title: "First computer",
-		body: "Mom and dad bought me my first computer: an i3 2nd gen with 4GB RAM and onboard graphics. Learned HTML, C++ and Java.",
-	},
-	{
-		when: "2012",
-		datetime: "2012",
-		title: "Cousin’s computer",
-		body: "My cousin let me use his computer, so I went to his house on weekends and vacations and learned a lot from it. Also assembled a PC myself.",
-	},
-	{
-		when: "2010",
-		datetime: "2010",
-		title: "First computer class",
-		body: "That first game got me hooked, so I wanted a computer. Mom put me in a class to learn the basics, and with no PC at home I was always in the school computer lab.",
-	},
-	{
-		when: "2009",
-		datetime: "2009",
-		title: "First computer game",
-		body: "Got my hands on a computer for the first time and played Grand Theft Auto 3.",
-		sound: "/gta3-pickup.opus",
-	},
-];
+const entries = (await getCollection("timeline")).sort((a, b) => a.id.localeCompare(b.id));
+const timeline = await Promise.all(
+	entries.map(async (entry) => ({
+		...entry.data,
+		body: entry.body,
+		Content: (await render(entry)).Content,
+	})),
+);
 ---
 
 <Layout>
-	<div class="grid flex-1 px-6 lg:grid-cols-2 lg:gap-12 lg:px-12">
-		<div class="flex flex-col gap-12 pt-6 pb-24 lg:pt-12 max-w-lg w-full [&_a]:underline [&_a]:font-medium [&_a]:underline-offset-4 [&_a]:hover:text-blue-600 dark:[&_a]:hover:text-green-300">
+	<div class="grid flex-1 px-8 lg:grid-cols-2 lg:gap-12 lg:px-12 xl:px-36">
+		<div class="flex flex-col gap-12 pt-8 pb-24 lg:pt-12 max-w-lg w-full [&_a]:underline [&_a]:font-medium [&_a]:underline-offset-4 [&_a]:hover:text-blue-600 dark:[&_a]:hover:text-green-300">
 			<div class="flex flex-wrap items-center gap-2 font-medium">
 				<a href="https://github.com/heyleydotdev" target="_blank" rel="noreferrer">github</a>
 				/
@@ -242,7 +31,9 @@ const timeline: TimelineItem[] = [
 			<section class="flex flex-col gap-4 text-sm/6">
 				<h2 class="font-medium">Timeline</h2>
 				<ol class="flex flex-col">
-					{timeline.map((item, index) => (
+					{timeline.map((item, index) => {
+						const Content = item.Content;
+						return (
 						<li class="group relative border-l border-zinc-200 pb-8 pl-5 last:border-transparent last:pb-0 dark:border-green-900">
 							<span
 								class:list={[
@@ -270,8 +61,8 @@ const timeline: TimelineItem[] = [
 									)}
 								</span>
 								{item.body && (
-									<p class="text-zinc-600 dark:text-green-600">
-										{item.body}
+									<div class="text-zinc-600 dark:text-green-600 [&_p]:inline">
+										<Content />
 										{item.sound && (
 											<button
 												type="button"
@@ -284,11 +75,12 @@ const timeline: TimelineItem[] = [
 												</svg>
 											</button>
 										)}
-									</p>
+									</div>
 								)}
 							</div>
 						</li>
-					))}
+					);
+					})}
 				</ol>
 			</section>
 		</div>
